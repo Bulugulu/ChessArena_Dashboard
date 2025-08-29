@@ -167,6 +167,22 @@ today_end_la = now
 today_start_utc = today_start_la.astimezone(pytz.utc)
 today_end_utc = today_end_la.astimezone(pytz.utc)
 
+# --- Today's Snapshot ---
+st.header("Today's Snapshot")
+first_time_visits_today = run_ga4_report(metric_names=("newUsers",), start_date=today_start_la, end_date=today_end_la)
+signups_today = db_signups_for_day(today_start_utc, today_end_utc)
+conversion_today = (signups_today / first_time_visits_today) if first_time_visits_today > 0 else 0
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric(label="First-time Visits", value=f"{first_time_visits_today:,}")
+with col2:
+    st.metric(label="Signups", value=f"{signups_today:,}")
+with col3:
+    st.metric(label="Conversion Rate", value=f"{conversion_today:.2%}")
+
+st.divider()
+
 # --- Date Handling for Funnel ---
 lookback_days = st.selectbox(
     "Select Lookback Days for Funnel:",
